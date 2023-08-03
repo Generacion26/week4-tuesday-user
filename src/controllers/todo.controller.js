@@ -2,12 +2,22 @@ const catchError = require('../utils/catchError');
 const Todo = require('../models/Todo');
 
 const getAll = catchError(async (req, res) => {
-    const results = await Todo.findAll();
+    const userId = req.user.id
+    const results = await Todo.findAll({ where: { userId } });
     return res.json(results);
 });
 
 const create = catchError(async (req, res) => {
-    const result = await Todo.create(req.body);
+    const userId = req.user.id
+
+    //OPTION 1
+    // const { task, isCompleted } = req.body
+    // const body = { task, isCompleted, userId}
+
+    //OPTIONS 2
+    const body = { ...req.body, userId }
+
+    const result = await Todo.create(body);
     return res.status(201).json(result);
 });
 
